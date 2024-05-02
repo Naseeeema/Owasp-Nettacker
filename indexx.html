@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Port Scan</title>
+</head>
+<body>
+    <div class="container">
+        <!-- Title and description -->
+        <h1>Port Scan</h1>
+        <p>Scan a website for open ports.</p>
+        
+        <!-- Input field for URL -->
+        <label for="urlInput">Enter the URL to scan:</label>
+        <input type="text" id="urlInput" placeholder="Example: www.example.com">
+        
+        <!-- Button to trigger the scan -->
+        <button onclick="performPortScan()">Scan</button>
+        
+        <!-- Container to display scan results -->
+        <pre id="scanResults"></pre> <!-- Use <pre> tag for preformatted text -->
+    </div>
+
+    <!-- JavaScript code -->
+    <script>
+        // JavaScript function to trigger the port scan
+        function performPortScan() {
+            // Get the URL input value
+            const url = document.getElementById('urlInput').value.trim();
+
+            // Check if the URL is empty
+            if (!url) {
+                alert('Please enter a URL');
+                return;
+            }
+
+            // Create the request body with the module and target URL
+            const requestBody = {
+                module: 'port_scan',
+                target: url
+            };
+
+            // Send a POST request to initiate the port scan
+            fetch('/scan', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestBody)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display the scan results
+                document.getElementById('scanResults').innerText = formatScanResults(data);
+            })
+            .catch(error => {
+                // Handle errors
+                console.error('Error:', error);
+                alert('An error occurred while performing the port scan.');
+            });
+        }
+
+        // Function to format the scan results for better readability
+        function formatScanResults(data) {
+            if (data.scan_results) {
+                // Return the scan results in a more readable format
+                return JSON.stringify(data.scan_results, null, 2);
+            } else {
+                return 'No scan results found.';
+            }
+        }
+    </script>
+</body>
+</html>
+
